@@ -42,22 +42,16 @@ class mis(object):
         return pattern.findall(page)
 
     def get_course_study_list_gc(self, courselist):
-        l = []
         pattern = re.compile(r'<tr[^>]*>\s*<td[^>]*>\w*</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>[^<]*</td>\s*<td[^>]*>([^<]*)</td>')
-        for course in courselist:
-            page = self.opener.open('http://mis.teach.ustc.edu.cn/querystubykcbjh.do?tag=gc&xnxq=' + mis.term +'&kcbjh=' + course[0] + '&kczw=' + course[1]).read()
-            if page.find('table') == -1:
-                raise Exception, 'Login Failure! '
-            l.append(pattern.findall(page))
-        return l
+        page = self.opener.open('http://mis.teach.ustc.edu.cn/querystubykcbjh.do?tag=gc&xnxq=' + mis.term +'&kcbjh=' + course[0] + '&kczw=' + course[1]).read()
+        if page.find('table') == -1:
+            raise Exception, 'Login Failure! '
+        return pattern.findall(page)
     
-    def get_course_study_list_jg(self, courselist):
-        l = []
+    def get_course_study_list_jg(self, course):
         pattern = re.compile(r'<tr[^>]*>\s*<td[^>]*>\w*</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>[^<]*</td>\s*<td[^>]*>([^<]*)</td>')
-        for course in courselist:
-            page = self.opener.open('http://mis.teach.ustc.edu.cn/querystubykcbjh.do?tag=jg&xnxq=' + mis.term +'&kcbjh=' + course[0] + '&kczw=' + course[1]).read()
-            if page.find('table') == -1:
-                raise Exception, 'Login Failure! '
-            l.append(pattern.findall(page))
-        return l
-
+        page = self.opener.open('http://mis.teach.ustc.edu.cn/querystubykcbjh.do?tag=jg&xnxq=' + mis.term +'&kcbjh=' + course[0] + '&kczw=' + course[1]).read()
+        if page.find('table') == -1:
+            raise Exception, 'Login Failure! '
+        return pattern.findall(page)
+    
