@@ -38,10 +38,20 @@ class mis(object):
 
     def get_course_list(self):
         page = self.opener.open('http://mis.teach.ustc.edu.cn/kbcx.do?xq=' + mis.term).read()
-        pattern = re.compile(r'<tr[^>]*>\s*<td[^>]*>\w*</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*><a[^>]*><font[^>]*>([^<]*)</font></a></td>')
+        pattern = re.compile(
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*><a[^>]*><font[^>]*>(.*?)</font></a></td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>')
+        # pattern = re.compile(r'<tr[^>]*>\s*((?:<td[^>]*>.*?</td>\s*){9}?)</tr>')
         return pattern.findall(page)
 
-    def get_course_study_list_gc(self, courselist):
+    def get_course_study_list_gc(self, course):
         pattern = re.compile(r'<tr[^>]*>\s*<td[^>]*>\w*</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>[^<]*</td>\s*<td[^>]*>([^<]*)</td>')
         page = self.opener.open('http://mis.teach.ustc.edu.cn/querystubykcbjh.do?tag=gc&xnxq=' + mis.term +'&kcbjh=' + course[0] + '&kczw=' + course[1]).read()
         if page.find('table') == -1:
