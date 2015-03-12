@@ -5,17 +5,18 @@ from PIL import Image
 
 class mis(object):
     term = '20142'
+    mis_path = 'http://mis.teach.ustc.edu.cn/'
 
     def __init__(self, usercode, password, image_path = 'img.jpg'):
         self.usercode = usercode
         self.password = password
         opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cookielib.CookieJar()))
-        opener.open('http://mis.teach.ustc.edu.cn/userinit.do?userbz=s')
+        opener.open(mis.mis_path + 'userinit.do?userbz=s')
         self.opener = opener
         self.path = image_path
 
     def get_image(self):
-        img = self.opener.open('http://mis.teach.ustc.edu.cn/randomImage.do').read()
+        img = self.opener.open(mis.mis_path + 'randomImage.do').read()
         f = open(self.path, 'wb')
         f.write(img)
         f.close()
@@ -29,7 +30,7 @@ class mis(object):
             # The verification code
             check = pytesseract.image_to_string(image, 'eng', False, '-psm 6').replace(' ', '')
             data = urllib.urlencode({'userbz': 's', 'hidjym': '', 'userCode': self.usercode, 'passWord': self.password, 'check': check})
-            request = urllib2.Request('http://mis.teach.ustc.edu.cn/login.do')
+            request = urllib2.Request(mis.mis_path + 'login.do')
             page = self.opener.open(request, data).read()
             # The page having tables is avaliable. 
             if page.find('table') != -1:
@@ -37,9 +38,9 @@ class mis(object):
         raise Exception, 'Login Failure! '
 
     def get_course_list(self):
-        page = self.opener.open('http://mis.teach.ustc.edu.cn/kbcx.do?xq=' + mis.term).read()
+        page = self.opener.open(mis.mis_path + 'kbcx.do?xklb=B&xq=' + mis.term).read()
         pattern = re.compile(
-            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>\d*?</td>\s*'
             r'<td[^>]*>(.*?)</td>\s*'
             r'<td[^>]*><a[^>]*><font[^>]*>(.*?)</font></a></td>\s*'
             r'<td[^>]*>(.*?)</td>\s*'
@@ -51,15 +52,25 @@ class mis(object):
         return pattern.findall(page)
 
     def get_course_study_list_gc(self, course):
-        pattern = re.compile(r'<tr[^>]*>\s*<td[^>]*>\w*</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>[^<]*</td>\s*<td[^>]*>([^<]*)</td>')
-        page = self.opener.open('http://mis.teach.ustc.edu.cn/querystubykcbjh.do?tag=gc&xnxq=' + mis.term +'&kcbjh=' + course[1] + '&kczw=' + course[2]).read()
+        pattern = re.compile(
+            r'<td[^>]*>\d*?</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*')
+        page = self.opener.open(mis.mis_path + 'querystubykcbjh.do?tag=gc&xnxq=' + mis.term + '&kcbjh=' + course[0] + '&kczw=' + course[1]).read()
         if page.find('table') == -1:
             raise Exception, 'Login Failure! '
         return pattern.findall(page)
     
     def get_course_study_list_jg(self, course):
-        pattern = re.compile(r'<tr[^>]*>\s*<td[^>]*>\w*</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>([^<]*)</td>\s*<td[^>]*>[^<]*</td>\s*<td[^>]*>([^<]*)</td>')
-        page = self.opener.open('http://mis.teach.ustc.edu.cn/querystubykcbjh.do?tag=jg&xnxq=' + mis.term +'&kcbjh=' + course[1] + '&kczw=' + course[2]).read()
+        pattern = re.compile(
+            r'<td[^>]*>\d*?</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*'
+            r'<td[^>]*>(.*?)</td>\s*')
+        page = self.opener.open(mis.mis_path + 'querystubykcbjh.do?tag=jg&xnxq=' + mis.term + '&kcbjh=' + course[0] + '&kczw=' + course[1]).read()
         if page.find('table') == -1:
             raise Exception, 'Login Failure! '
         return pattern.findall(page)
